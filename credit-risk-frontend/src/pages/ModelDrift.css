@@ -1,0 +1,109 @@
+.drift-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-radius: var(--radius-lg);
+  background: rgba(31, 138, 95, 0.08);
+  color: var(--band-a);
+  margin-bottom: 22px;
+}
+
+.drift-banner-alert {
+  background: rgba(194, 61, 61, 0.08);
+  color: var(--band-e);
+}
+
+.drift-banner-title {
+  font-weight: 700;
+  font-size: 14.5px;
+}
+
+.drift-banner-sub {
+  font-size: 12.5px;
+  opacity: 0.85;
+  margin-top: 2px;
+}
+
+.drift-legend {
+  display: flex;
+  gap: 20px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.drift-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.drift-legend-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.chart-card-sub {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.overall-drift-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.overall-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 18px;
+  border: 1px solid var(--paper-border);
+  border-radius: var(--radius-lg);
+  background: var(--paper);
+}
+
+.overall-stat-label {
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+}
+
+.overall-stat-value {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.overall-stat-suffix {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.overall-stat-note {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.drift-severity-chip {
+  align-self: flex-start;
+  margin-top: 2px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #fff;
+}
+
+@media (max-width: 720px) {
+  .overall-drift-grid {
+    grid-template-columns: 1fr;
+  }
+}
