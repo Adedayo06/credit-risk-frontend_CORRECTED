@@ -10,16 +10,24 @@ import {
   ScoreResult,
 } from "./types";
 
-// Individual-scoring service (POST /score, GET /psi, GET /health) via the
-// /api proxy in vite.config.ts. Change the proxy target there if it runs
-// somewhere other than http://localhost:8000.
-const BASE_URL = "/api";
+// Individual-scoring service (POST /score, GET /health, GET /metrics).
+//
+// In local dev this falls back to "/api", which vite.config.ts proxies to
+// http://localhost:8000. In production (Vercel), set VITE_MODEL_API_URL to
+// the deployed credit-risk-api URL (e.g. https://credit-risk-model-api.onrender.com)
+// — Vercel has no dev-server proxy, so a real absolute URL is required
+// there.
+const BASE_URL = import.meta.env.VITE_MODEL_API_URL ?? "/api";
 
 // Batch Scoring API — a separate service that persists every batch run as
-// a "score report" and itself calls the individual-scoring service per
-// record. Assumed to run on :8001; change the /api/batch proxy target in
-// vite.config.ts if yours runs elsewhere.
-const BATCH_BASE_URL = "/api/batch";
+// a "score report", itself calls the individual-scoring service per record,
+// and (since it owns the score-report database) also serves GET /psi.
+//
+// In local dev this falls back to "/api/batch", proxied to
+// http://localhost:8001 in vite.config.ts. In production, set
+// VITE_BATCH_API_URL to the deployed batch-api URL (e.g.
+// https://credit-risk-batch-api.onrender.com).
+const BATCH_BASE_URL = import.meta.env.VITE_BATCH_API_URL ?? "/api/batch";
 
 // Thrown when the backend can't be reached at all (service not running,
 // wrong port, network down) — as opposed to a bad HTTP response.
@@ -121,11 +129,13 @@ export const api = {
     return toScoreResult(id, result, analyst);
   },
 
-  // GET /psi — the model service may not expose this endpoint yet, in which
-  // case we return an empty set and the drift views show an honest empty state.
+  // GET /psi (Batch Scoring API — it's the service with the database drift
+  // is computed from). Returns an empty set if the endpoint isn't available
+  // yet (e.g. no baseline configured server-side) so the drift views show an
+  // honest empty state instead of an error.
   async psi(): Promise<PsiFeaturePoint[]> {
     try {
-      const raw = await request<unknown>(BASE_URL, "/psi");
+      const raw = await request<unknown>(BATCH_BASE_URL, "/psi");
       return normalizePsi(raw);
     } catch {
       return [];
@@ -137,7 +147,7 @@ export const api = {
   // empty report + blank verdict if the endpoint is unavailable.
   async drift(): Promise<DriftReport> {
     try {
-      const raw = await request<unknown>(BASE_URL, "/psi");
+      const raw = await request<unknown>(BATCH_BASE_URL, "/psi");
       const overall =
         raw && typeof raw === "object" && typeof (raw as { overall?: unknown }).overall === "string"
           ? (raw as { overall: string }).overall
